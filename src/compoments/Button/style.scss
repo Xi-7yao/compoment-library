@@ -1,0 +1,106 @@
+@use '../../styles/variables' as v;
+@use 'sass:color';
+
+.btn {
+    display: inline-block;
+    border-radius: v.$btn-border-radius;
+    border-width: v.$btn-border-width;
+    border-style: v.$btn-border-style;
+    font-family: v.$btn-font-family;
+    font-size: v.$btn-font-size;
+    height: v.$btn-height;
+    padding: v.$btn-padding-y v.$btn-padding-x;
+    cursor: pointer;
+    transition:
+        background 0.3s cubic-bezier(.645, .045, .355, 1),
+        color 0.3s cubic-bezier(.645, .045, .355, 1),
+        border-color 0.3s cubic-bezier(.645, .045, .355, 1),
+        box-shadow 0.3s cubic-bezier(.645, .045, .355, 1);
+    background: v.$btn-default-bg;
+    color: v.$btn-default-color;
+    border-color: v.$btn-default-border-color;
+    position: relative;
+    overflow: hidden;
+
+    // 块级按钮
+    &-block {
+        width: 100%;
+        display: block;
+    }
+
+    // 禁用样式
+    &-disabled,
+    &:disabled {
+        cursor: not-allowed;
+        background: v.$btn-bg-disabled;
+        color: v.$btn-color-disabled;
+        border-color: v.$btn-border-disabled;
+    }
+
+    // Primary 类型
+    &-primary {
+        background: v.$btn-primary-bg;
+        color: v.$btn-primary-color;
+        border-color: v.$btn-primary-border-color;
+
+        &:hover:not(.btn-disabled):not(:disabled) {
+            background: v.$btn-primary-bg-hover;
+            border-color: v.$btn-primary-border-hover;
+            color: v.$btn-primary-color-hover;
+        }
+
+        &:active:not(.btn-disabled):not(:disabled) {
+            background: v.$btn-primary-bg-active;
+            border-color: v.$btn-primary-border-active;
+            color: v.$btn-primary-color-active;
+        }
+    }
+
+    // Default 类型
+    &-default {
+        background: v.$btn-default-bg;
+        color: v.$btn-default-color;
+        border-color: v.$btn-default-border-color;
+
+        &:hover:not(.btn-disabled):not(:disabled) {
+            color: v.$btn-default-color-hover;
+            border-color: v.$btn-default-border-hover;
+            background: v.$btn-default-bg-hover;
+        }
+
+        &:active:not(.btn-disabled):not(:disabled) {
+            color: v.$btn-default-color-active;
+            border-color: v.$btn-default-border-active;
+            background: v.$btn-default-bg-active;
+        }
+    }
+
+    // 大小适配
+    &-large {
+        height: v.$btn-height-lg;
+        font-size: v.$btn-font-size-lg;
+        padding: v.$btn-padding-y v.$btn-padding-x-lg;
+    }
+
+    &-small {
+        height: v.$btn-height-sm;
+        font-size: v.$btn-font-size-sm;
+        padding: v.$btn-padding-y v.$btn-padding-x-sm;
+    }
+}
+
+.btn-anim {
+    animation: btn-spread-shadow 0.45s cubic-bezier(.645, .045, .355, 1) forwards;
+}
+
+@keyframes btn-spread-shadow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(22, 119, 255, 0.1); // 起点：无阴影
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(22, 119, 255, 0.1); // 扩散到最大，透明度保持
+    }
+    100% {
+        box-shadow: 0 0 0 8px rgba(22, 119, 255, 0.06); // 渐隐为0，半径可略再大一点
+    }
+}

@@ -1,0 +1,102 @@
+// ==================== 基础色彩 ====================
+$color-primary: #1677ff;
+$color-success: #52c41a;
+$color-warning: #faad14;
+$color-error: #ff4d4f;
+$color-info: $color-primary;
+
+$color-bg-base: #fff;
+$color-bg-hover: #f5f5f5;
+$color-border: #d9d9d9;
+$color-text-base: #1d2129;
+$color-link: $color-primary;
+$color-white: #fff;
+
+// ==================== 字体 ====================
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+$font-size-base: 14px;
+$font-size-lg: 16px;
+$font-size-sm: 12px;
+
+// ==================== 边框、圆角 ====================
+$border-radius: 6px;
+$border-width: 1px;
+$border-style: solid;
+
+// ==================== 尺寸/控件高度 ====================
+$control-height: 32px;
+$control-height-lg: 40px;
+$control-height-sm: 24px;
+
+// ==================== 间距 ====================
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// ==================== 层级/动效 ====================
+$z-index-base: 0;
+$z-index-popup: 1000;
+$transition-duration: .3s;
+$transition-ease: cubic-bezier(.645, .045, .355, 1);
+
+// ==================== 按钮专用变量 ====================
+
+// ------ 结构、尺寸、字体 ------
+$btn-border-radius: $border-radius;
+$btn-border-width: $border-width;
+$btn-border-style: $border-style;
+$btn-font-family: $font-family;
+$btn-font-size: $font-size-base;
+$btn-height: $control-height;
+$btn-padding-x: $spacing-md;
+$btn-padding-y: 0;
+$btn-transition-duration: $transition-duration;
+$btn-transition-ease: $transition-ease;
+
+// ------ 大小适配 ------
+$btn-height-sm: $control-height-sm;
+$btn-height-lg: $control-height-lg;
+$btn-font-size-sm: $font-size-sm;
+$btn-font-size-lg: $font-size-lg;
+$btn-padding-x-sm: $spacing-sm;
+$btn-padding-x-lg: $spacing-lg;
+
+$btn-bg-disabled: rgba(0, 0, 0, 0.04);
+$btn-border-disabled: $color-border;
+$btn-color-disabled: rgba(0, 0, 0, 0.25);
+
+// ------ 主按钮（primary） ------
+$btn-primary-bg: $color-primary;
+$btn-primary-color: $color-white;
+$btn-primary-border-color: $color-primary;
+
+$btn-primary-bg-hover: #4096ff;
+$btn-primary-border-hover: #4096ff;
+$btn-primary-color-hover: $color-white;
+
+$btn-primary-bg-active: #0958d9;
+$btn-primary-border-active: #0958d9;
+$btn-primary-color-active: $color-white;
+
+// $btn-primary-bg-disabled: rgba(0, 0, 0, 0.04);
+// $btn-primary-border-disabled: $color-border;
+// $btn-primary-color-disabled: rgba(0, 0, 0, 0.25);
+
+// $btn-primary-border-focus: $btn-primary-border-hover; // 可自定义
+
+// ------ 默认按钮（default） ------
+$btn-default-bg: $color-bg-base;
+$btn-default-color: #000;
+$btn-default-border-color: $color-border;
+
+$btn-default-color-hover: #4096ff;
+$btn-default-border-hover: #4096ff;
+$btn-default-bg-hover: $color-white;
+
+$btn-default-bg-active: $color-white;
+$btn-default-border-active: #0958d9;
+$btn-default-color-active: #0958d9;
+
+// $btn-default-border-focus: $btn-default-border-hover;
