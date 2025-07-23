@@ -1,52 +1,72 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import classNames from "classnames";
-import './style.scss'
+import './_style.scss'
+import { LoadingOutlined } from '@ant-design/icons';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
-type ButtonType = 'primary' | 'default';
+type ButtonType = 'primary' | 'default' | 'dashed' | 'text' | 'link' | 'ghost';
 type ButtonSize = 'large' | 'middle' | 'small';
 
-export interface ButtonProps {
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
     type?: ButtonType;
+    htmlType?: 'submit' | 'reset' | 'button';
+    loading?: boolean;
     size?: ButtonSize;
     disabled?: boolean;
     block?: boolean;
+    danger?: boolean;
     children: React.ReactNode;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const Button = (props: ButtonProps) => {
     const {
         type = 'default',
+        loading = false,
         size = 'middle',
         disabled = false,
         block = false,
+        danger = false,
+        htmlType = 'button',
         children,
+        onClick,
         ...rest
     } = props;
+
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const btnClass = classNames(
         'btn',
         `btn-${type}`,
         `btn-${size}`,
         {
+            'btn-danger': danger,
+            'btn-loading': loading,
             'btn-block': block,
-            'btn-disabled': disabled
+            'btn-anim': isAnimating,
         }
     )
 
+    const loadClass = classNames('btn-icon');
+
     const btnRef = useRef<HTMLButtonElement>(null);
 
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (loading) {
+            e.preventDefault();
+            return;
+        }
+        onClick?.(e);
+    };
+
     const handleMouseUp = () => {
-        if (!btnRef.current) return;
-        const node = btnRef.current;
-        node.classList.remove('btn-anim');
-        // 读取 offsetWidth 触发浏览器重绘
-        void node.offsetWidth;
-        node.classList.add('btn-anim');
+        if (!btnRef.current || loading || type === 'text' || type === 'link') return;
+        setIsAnimating(true);
     };
 
     const handleAnimationEnd = () => {
         if (!btnRef.current) return;
-        btnRef.current.classList.remove('btn-anim');
+        setIsAnimating(false);
     };
 
     return (
@@ -54,11 +74,28 @@ const Button = (props: ButtonProps) => {
             ref={btnRef}
             className={btnClass}
             disabled={disabled}
+            type={htmlType}
             onMouseUp={handleMouseUp}
             onAnimationEnd={handleAnimationEnd}
+            onClick={handleClick}
             {...rest}
         >
-            {children}
+            <TransitionGroup component={null}>
+                {loading && (
+                    <CSSTransition
+                        classNames="loading-fade"
+                        timeout={200}
+                        appear
+                        unmountOnExit
+                        nodeRef={btnRef}
+                    >
+                        <span ref={btnRef} className={loadClass}>
+                            <LoadingOutlined />
+                        </span>
+                    </CSSTransition>
+                )}
+            </TransitionGroup>
+            <span>{children}</span>
         </button>
     )
 }
