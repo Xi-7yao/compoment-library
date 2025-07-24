@@ -4,19 +4,28 @@ import './_style.scss'
 import { LoadingOutlined } from '@ant-design/icons';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
-type ButtonType = 'primary' | 'default' | 'dashed' | 'text' | 'link' | 'ghost';
+type ButtonType = 'primary' | 'default' | 'dashed' | 'text' | 'link';
 type ButtonSize = 'large' | 'middle' | 'small';
 
-interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
+type SharedProps = Omit<React.HTMLAttributes<HTMLElement>, 'type' | 'onClick'>;
+type ButtonHTMLProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'>;
+type AnchorHTMLProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'type'>;
+
+interface ButtonProps extends SharedProps {
     type?: ButtonType;
     htmlType?: 'submit' | 'reset' | 'button';
     loading?: boolean;
+    ghost?: boolean;
     size?: ButtonSize;
     disabled?: boolean;
     block?: boolean;
     danger?: boolean;
+    href?: string;
+    target?: string;
+    icon?: React.ReactNode;
+    iconPosition?: 'start' | 'end';
     children: React.ReactNode;
-    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    onClick?: React.MouseEventHandler<HTMLElement>;
 }
 
 const Button = (props: ButtonProps) => {
@@ -27,7 +36,12 @@ const Button = (props: ButtonProps) => {
         disabled = false,
         block = false,
         danger = false,
+        ghost = false,
         htmlType = 'button',
+        icon = null,
+        iconPosition = 'start',
+        href,
+        target,
         children,
         onClick,
         ...rest
@@ -44,14 +58,20 @@ const Button = (props: ButtonProps) => {
             'btn-loading': loading,
             'btn-block': block,
             'btn-anim': isAnimating,
+            'btn-ghost': ghost,
         }
     )
 
-    const loadClass = classNames('btn-icon');
+    const iconClass = classNames({
+        'btn-icon-left': iconPosition === 'start',
+        'btn-icon-right': iconPosition === 'end',
+
+    });
 
     const btnRef = useRef<HTMLButtonElement>(null);
+    const iconRef = useRef<HTMLElement>(null);
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (e: React.MouseEvent<HTMLElement>) => {
         if (loading) {
             e.preventDefault();
             return;
@@ -60,7 +80,7 @@ const Button = (props: ButtonProps) => {
     };
 
     const handleMouseUp = () => {
-        if (!btnRef.current || loading || type === 'text' || type === 'link') return;
+        if (!btnRef.current || loading || type === 'link' || type === 'text') return;
         setIsAnimating(true);
     };
 
@@ -68,6 +88,54 @@ const Button = (props: ButtonProps) => {
         if (!btnRef.current) return;
         setIsAnimating(false);
     };
+
+    const renderIconOrLoading = () => {
+        return (
+            <TransitionGroup component={null}>
+                {loading ? (
+                    <CSSTransition
+                        classNames="loading-fade"
+                        timeout={200}
+                        appear
+                        unmountOnExit
+                        nodeRef={iconRef}
+                    >
+                        <span ref={iconRef} className={iconClass}>
+                            <LoadingOutlined />
+                        </span>
+                    </CSSTransition>
+                ) : icon? (
+                    icon && (
+                        <span className={iconClass}>
+                            {icon}
+                        </span>
+                    )
+                ) : null}
+            </TransitionGroup>
+        )
+    }
+
+    const renderContent = () => [
+        iconPosition === 'start' ? renderIconOrLoading() : null,
+        children,
+        iconPosition === 'end' ? renderIconOrLoading() : null,
+    ].filter(Boolean);
+
+    if (type === 'link') {
+        return (
+            <a
+                href={href}
+                className={btnClass}
+                onMouseUp={handleMouseUp}
+                onAnimationEnd={handleAnimationEnd}
+                onClick={handleClick}
+                target={target}
+                {...rest as AnchorHTMLProps}
+            >
+                {renderContent()}
+            </a>
+        )
+    }
 
     return (
         <button
@@ -78,24 +146,9 @@ const Button = (props: ButtonProps) => {
             onMouseUp={handleMouseUp}
             onAnimationEnd={handleAnimationEnd}
             onClick={handleClick}
-            {...rest}
+            {...rest as ButtonHTMLProps}
         >
-            <TransitionGroup component={null}>
-                {loading && (
-                    <CSSTransition
-                        classNames="loading-fade"
-                        timeout={200}
-                        appear
-                        unmountOnExit
-                        nodeRef={btnRef}
-                    >
-                        <span ref={btnRef} className={loadClass}>
-                            <LoadingOutlined />
-                        </span>
-                    </CSSTransition>
-                )}
-            </TransitionGroup>
-            <span>{children}</span>
+            {renderContent()}
         </button>
     )
 }
