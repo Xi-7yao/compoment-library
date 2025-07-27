@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import classNames from "classnames";
-import './_style.scss'
+import './style.scss'
 import { LoadingOutlined } from '@ant-design/icons';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
@@ -10,6 +10,7 @@ type ButtonSize = 'large' | 'middle' | 'small';
 type SharedProps = Omit<React.HTMLAttributes<HTMLElement>, 'type' | 'onClick'>;
 type ButtonHTMLProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'>;
 type AnchorHTMLProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'type'>;
+type iconPositionType = 'start' | 'end';
 
 interface ButtonProps extends SharedProps {
     type?: ButtonType;
@@ -23,8 +24,9 @@ interface ButtonProps extends SharedProps {
     href?: string;
     target?: string;
     icon?: React.ReactNode;
-    iconPosition?: 'start' | 'end';
-    children: React.ReactNode;
+    iconPosition?: iconPositionType;
+    children?: React.ReactNode;
+    className?: string;
     onClick?: React.MouseEventHandler<HTMLElement>;
 }
 
@@ -40,6 +42,7 @@ const Button = (props: ButtonProps) => {
         htmlType = 'button',
         icon = null,
         iconPosition = 'start',
+        className,
         href,
         target,
         children,
@@ -49,8 +52,9 @@ const Button = (props: ButtonProps) => {
 
     const [isAnimating, setIsAnimating] = useState(false);
 
-    const btnClass = classNames(
+    const btnClass = classNames(className,
         'btn',
+        'btn-init',
         `btn-${type}`,
         `btn-${size}`,
         {
@@ -59,23 +63,23 @@ const Button = (props: ButtonProps) => {
             'btn-block': block,
             'btn-anim': isAnimating,
             'btn-ghost': ghost,
+            'btn-icon-only': !children,
         }
     )
 
     const iconClass = classNames({
-        'btn-icon-left': iconPosition === 'start',
-        'btn-icon-right': iconPosition === 'end',
-
+        'btn-icon-start': iconPosition === 'start' && children,
+        'btn-icon-end': iconPosition === 'end' && children,
     });
 
     const btnRef = useRef<HTMLButtonElement>(null);
     const iconRef = useRef<HTMLElement>(null);
 
     const handleClick = (e: React.MouseEvent<HTMLElement>) => {
-        if (loading) {
-            e.preventDefault();
-            return;
-        }
+        // if (loading) {
+        //     e.preventDefault();
+        //     return;
+        // }
         onClick?.(e);
     };
 
@@ -89,37 +93,43 @@ const Button = (props: ButtonProps) => {
         setIsAnimating(false);
     };
 
-    const renderIconOrLoading = () => {
+    const renderIcon = () => {
+        if (loading) {
+            return (
+                <CSSTransition
+                    classNames={"loading-fade"}
+                    timeout={200}
+                    nodeRef={iconRef}
+                >
+                    <span ref={iconRef} className={iconClass}>
+                        <LoadingOutlined />
+                    </span>
+                </CSSTransition>
+
+            )
+        } else if (icon) {
+            return (
+                <CSSTransition
+                    classNames={"loading-fade"}
+                    timeout={200}
+                    nodeRef={iconRef}
+                >
+                    <span className={iconClass}>
+                        {icon}
+                    </span>
+                </CSSTransition>
+            )
+        } else {
+            return null
+        }
+    }
+    const renderContent = () => {
         return (
             <TransitionGroup component={null}>
-                {loading ? (
-                    <CSSTransition
-                        classNames="loading-fade"
-                        timeout={200}
-                        appear
-                        unmountOnExit
-                        nodeRef={iconRef}
-                    >
-                        <span ref={iconRef} className={iconClass}>
-                            <LoadingOutlined />
-                        </span>
-                    </CSSTransition>
-                ) : icon? (
-                    icon && (
-                        <span className={iconClass}>
-                            {icon}
-                        </span>
-                    )
-                ) : null}
+                {renderIcon()}
             </TransitionGroup>
         )
     }
-
-    const renderContent = () => [
-        iconPosition === 'start' ? renderIconOrLoading() : null,
-        children,
-        iconPosition === 'end' ? renderIconOrLoading() : null,
-    ].filter(Boolean);
 
     if (type === 'link') {
         return (
@@ -132,7 +142,9 @@ const Button = (props: ButtonProps) => {
                 target={target}
                 {...rest as AnchorHTMLProps}
             >
-                {renderContent()}
+                {iconPosition === 'start' && renderContent()}
+                <span>{children}</span>
+                {iconPosition === 'end' && renderContent()}
             </a>
         )
     }
@@ -148,7 +160,9 @@ const Button = (props: ButtonProps) => {
             onClick={handleClick}
             {...rest as ButtonHTMLProps}
         >
-            {renderContent()}
+            {iconPosition === 'start' && renderContent()}
+            <span>{children}</span>
+            {iconPosition === 'end' && renderContent()}
         </button>
     )
 }

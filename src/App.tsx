@@ -50,6 +50,7 @@ function App() {
       <Button type="dashed" ghost danger>
         Primary Button
       </Button>
+      <Button icon={<SearchOutlined/>} iconPosition="end" className="test-button"></Button>
     </div>
   )
 }
