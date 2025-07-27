@@ -75,11 +75,31 @@ const Button = (props: ButtonProps) => {
     const btnRef = useRef<HTMLButtonElement>(null);
     const iconRef = useRef<HTMLElement>(null);
 
+    const getBackground = () => {
+        if (btnRef.current) {
+            const btn = btnRef.current;
+            const colorStr = window.getComputedStyle(btn).getPropertyValue('--animation-color');
+
+            const rgb = [
+                parseInt(colorStr.slice(1, 3), 16),
+                parseInt(colorStr.slice(3, 5), 16),
+                parseInt(colorStr.slice(5, 7), 16)
+            ];
+            const start = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.1)`;
+            const end = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.03)`;
+
+            btn.style.setProperty('--anim-start', start);
+            btn.style.setProperty('--anim-end', end);
+        }
+    };
+
+
     const handleClick = (e: React.MouseEvent<HTMLElement>) => {
-        // if (loading) {
-        //     e.preventDefault();
-        //     return;
-        // }
+        if (loading) {
+            e.preventDefault();
+            return;
+        }
+        getBackground();
         onClick?.(e);
     };
 
