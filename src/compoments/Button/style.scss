@@ -27,6 +27,7 @@
     --btn-primary-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
 
     --btn-default-background: #fff;
+    --btn-default-color: var(--color-text-primary)
     --btn-default-color-hover: var(--color-primary-hover);
     --btn-default-color-active: var(--color-primary-active);
     --btn-default-border-color: var(--color-border);
@@ -62,17 +63,17 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    background: transparent;
+    color: var(--color-text-primary);
+    border-color: transparent;
     border-radius: var(--border-radius);
     border-width: var(--line-width);
     border-style: var(--line-type);
-    border-color: transparent;
+    box-shadow: var(--btn-blue-shadow);
     font-family: var(--font-family);
     cursor: pointer;
     transition: all var(--motion-duration-mid) var(--motion-ease-in-out);
-    background: transparent;
-    color: var(--color-text-primary);
-    position: relative;
-    box-shadow: var(--btn-blue-shadow);
     box-sizing: border-box;
     --animation-color: var(--btn-default-border-color-hover);
 
@@ -144,10 +145,6 @@
             color: var(--btn-default-color-hover);
             border-color: var(--btn-default-border-color-hover)
         }
-
-        &.btn-ghost {
-            @include ghost-variant(var(--btn-default-background), var(--btn-default-color-hover), var(--btn-default-color-hover));
-        }
     }
 
     &-text {
@@ -204,6 +201,14 @@
     &-loading {
         opacity: 0.65;
         cursor: default;
+    }
+
+    &.btn-primary.btn-ghost {
+        @include ghost-variant(var(--btn-primary-background), var(--btn-primary-background-hover), var(--btn-primary-background-active));
+    }
+
+    &.btn-ghost {
+        @include ghost-variant(var(--btn-default-background), var(--btn-default-color-hover), var(--btn-default-color-hover));
     }
 
     &.btn-primary.btn-danger {

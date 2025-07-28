@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, type ReactNode } from "react";
 import classNames from "classnames";
 import './style.scss'
 import { LoadingOutlined } from '@ant-design/icons';
@@ -6,58 +6,51 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 type ButtonType = 'primary' | 'default' | 'dashed' | 'text' | 'link';
 type ButtonSize = 'large' | 'middle' | 'small';
+type IconPositionType = 'start' | 'end';
+type HtmlType = 'submit' | 'reset' | 'button';
 
-type SharedProps = Omit<React.HTMLAttributes<HTMLElement>, 'type' | 'onClick'>;
-type ButtonHTMLProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'>;
-type AnchorHTMLProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'type'>;
-type iconPositionType = 'start' | 'end';
+type NativeButtonProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'onClick'>;
+type NativeAnchorProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'type' | 'onClick'>;
 
-interface ButtonProps extends SharedProps {
+interface BaseProps {
     type?: ButtonType;
-    htmlType?: 'submit' | 'reset' | 'button';
-    loading?: boolean;
-    ghost?: boolean;
+    htmlType?: HtmlType;
     size?: ButtonSize;
-    disabled?: boolean;
     block?: boolean;
-    danger?: boolean;
-    href?: string;
-    target?: string;
-    icon?: React.ReactNode;
-    iconPosition?: iconPositionType;
-    children?: React.ReactNode;
     className?: string;
-    onClick?: React.MouseEventHandler<HTMLElement>;
+    loading?: boolean;
+    danger?: boolean;
+    ghost?: boolean;
+    icon?: ReactNode;
+    iconPosition?: IconPositionType;
+    children?: ReactNode;
 }
+
+type ButtonProps =
+    | (BaseProps & { type?: Exclude<ButtonType, 'link'>; onClick?: React.MouseEventHandler<HTMLButtonElement> } & NativeButtonProps)
+    | (BaseProps & { type: 'link'; href?: string; onClick?: React.MouseEventHandler<HTMLAnchorElement> } & NativeAnchorProps)
 
 const Button = (props: ButtonProps) => {
     const {
         type = 'default',
-        loading = false,
+        htmlType = 'button',
         size = 'middle',
-        disabled = false,
         block = false,
+        className,
+        loading = false,
         danger = false,
         ghost = false,
-        htmlType = 'button',
-        icon = null,
+        icon,
         iconPosition = 'start',
-        className,
-        href,
-        target,
         children,
-        onClick,
         ...rest
     } = props;
 
     const [isAnimating, setIsAnimating] = useState(false);
+    const btnRef = useRef<HTMLButtonElement>(null);
+    const iconRef = useRef<HTMLElement>(null);
 
-    const btnClass = classNames(className,
-        'btn',
-        'btn-init',
-        `btn-${type}`,
-        `btn-${size}`,
-        {
+    const btnClass = classNames(className, 'btn', 'btn-init', `btn-${type}`, `btn-${size}`,{
             'btn-danger': danger,
             'btn-loading': loading,
             'btn-block': block,
@@ -71,9 +64,6 @@ const Button = (props: ButtonProps) => {
         'btn-icon-start': iconPosition === 'start' && children,
         'btn-icon-end': iconPosition === 'end' && children,
     });
-
-    const btnRef = useRef<HTMLButtonElement>(null);
-    const iconRef = useRef<HTMLElement>(null);
 
     const getBackground = () => {
         if (btnRef.current) {
@@ -91,16 +81,6 @@ const Button = (props: ButtonProps) => {
             btn.style.setProperty('--anim-start', start);
             btn.style.setProperty('--anim-end', end);
         }
-    };
-
-
-    const handleClick = (e: React.MouseEvent<HTMLElement>) => {
-        if (loading) {
-            e.preventDefault();
-            return;
-        }
-        getBackground();
-        onClick?.(e);
     };
 
     const handleMouseUp = () => {
@@ -152,39 +132,65 @@ const Button = (props: ButtonProps) => {
     }
 
     if (type === 'link') {
+        const {
+            onClick,
+            ...anchorRest
+        } = rest as Extract<ButtonProps, { type: 'link' }>;
+
+        const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+            if (loading) {
+                e.preventDefault();
+                return;
+            }
+            getBackground();
+            onClick?.(e);
+        };
+
         return (
             <a
-                href={href}
                 className={btnClass}
                 onMouseUp={handleMouseUp}
                 onAnimationEnd={handleAnimationEnd}
                 onClick={handleClick}
-                target={target}
-                {...rest as AnchorHTMLProps}
+                {...anchorRest}
             >
                 {iconPosition === 'start' && renderContent()}
                 <span>{children}</span>
                 {iconPosition === 'end' && renderContent()}
             </a>
         )
-    }
+    } else {
+        const {
+            onClick,
+            type,
+            ...buttonRest
+        } = rest as Extract<ButtonProps, { type?: Exclude<ButtonType, 'link'> }>;
 
-    return (
-        <button
-            ref={btnRef}
-            className={btnClass}
-            disabled={disabled}
-            type={htmlType}
-            onMouseUp={handleMouseUp}
-            onAnimationEnd={handleAnimationEnd}
-            onClick={handleClick}
-            {...rest as ButtonHTMLProps}
-        >
-            {iconPosition === 'start' && renderContent()}
-            <span>{children}</span>
-            {iconPosition === 'end' && renderContent()}
-        </button>
-    )
+        const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+            if (loading) {
+                e.preventDefault();
+                return;
+            }
+            getBackground();
+            onClick?.(e);
+        };
+
+        return (
+            <button
+                ref={btnRef}
+                className={btnClass}
+                type={htmlType}
+                onMouseUp={handleMouseUp}
+                onAnimationEnd={handleAnimationEnd}
+                onClick={handleClick}
+                {...buttonRest}
+            >
+                {iconPosition === 'start' && renderContent()}
+                <span>{children}</span>
+                {iconPosition === 'end' && renderContent()}
+            </button>
+        )
+    }
 }
 
 export default Button;

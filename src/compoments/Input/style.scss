@@ -1,0 +1,69 @@
+.input {
+    --input-large-padding: 7px 11px;
+    --input-large-font-size: var(--font-size-lg);
+    --input-middle-padding: 4px 11px;
+    --input-middle-font-size: var(--font-size);
+    --input-small-padding: 0px 7px;
+    --input-small-font-size: var(--font-size-sm);
+    
+    --input-default-border-radius: var(--border-radius);
+    --input-default-border-width: var(--line-width);
+    --input-default-border-style: var(--line-type);
+    --input-box-shadow: 0 0 0 2px rgba(5,145,255,0.1);
+
+    --input-default-background: #fff;
+    --input-default-color: var(--color-text-primary);
+    --input-default-border-color: rgb(217, 217, 217);
+    --input-default-background-hover: var(--input-default-background);
+    --input-default-color-hover: var(--input-default-color);
+    --input-default-border-color-hover: var(--color-primary-hover);
+    --input-default-background-active: var(--input-default-background);
+    --input-default-color-active: var(--input-default-color);
+    --input-default-border-color-active: var(--color-primary-active);
+}
+
+.input {
+    display: inline-block;
+    width: 100%;
+
+    background: var(--input-default-background);
+    color: var(--input-default-color);
+    border-color: var(--input-default-border-color);
+    border-radius: var(--input-default-border-radius);
+    border-width: var(--input-default-border-width);
+    border-style: var(--input-default-border-style);
+
+    transition: all var(--motion-duration-mid);
+    box-sizing: border-box;
+    list-style: none;
+
+    &:hover:not(:disabled) {
+        background: var(--input-default-background-hover);
+        color: var(--input-default-color-hover);
+        border-color: var(--input-default-border-color-hover);
+    }
+
+    &:focus:not(:disabled) {
+        background: var(--input-default-background-active);
+        color: var(--input-default-color-active);
+        border-color: var(--input-default-border-color-active);
+        box-shadow: var(--input-box-shadow);
+        outline: 0;
+    }
+
+    &-large {
+        font-size: var(--input-large-font-size);
+        height: 24px;
+        padding: var(--input-large-padding);
+    }
+    &-middle {
+        font-size: var(--input-middle-font-size);
+        line-height: 22px;
+        padding: var(--input-middle-padding);
+    }
+    &-small {
+        font-size: var(--input-small-font-size);
+        line-height: 22px;
+        padding: var(--input-small-padding);
+    }
+}

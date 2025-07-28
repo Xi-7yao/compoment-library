@@ -35,7 +35,7 @@ function App() {
       <Button type="dashed">
         Dashed Button
       </Button>
-      <Button type="link" loading={loading} onClick={() => setLoading(!loading)} target="_blank">
+      <Button type="link" loading={loading} onClick={() => setLoading(!loading)} target="_blank" href="https://www.baidu.com">
         Link Button
       </Button>
       <Button type="text">
@@ -50,7 +50,6 @@ function App() {
       <Button type="dashed" ghost danger>
         Primary Button
       </Button>
-      <Button icon={<SearchOutlined/>} iconPosition="end" className="test-button"></Button>
     </div>
   )
 }
